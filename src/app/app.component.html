@@ -17,16 +17,18 @@
         {{ item.name }}
       </div>
     </div>
-    <ng-template #noResults> No results (characters) </ng-template>
+    <ng-template #noResults> No results </ng-template>
   </ng-container>
 
-  <button (click)="loadCharactersAndPlanet()">Load Characters And Planets</button>
+  <button (click)="loadCharactersAndPlanet()">
+    Load Characters And Planets
+  </button>
   <ng-container *ngIf="planetAndCharactersResults$ | async as results">
     <div *ngIf="results.length > 0; else noResults">
       <div *ngFor="let item of results">
         {{ item.name }}
       </div>
     </div>
-    <ng-template #noResults> No results (characters and planets) </ng-template>
+    <ng-template #noResults> No results </ng-template>
   </ng-container>
 </div>

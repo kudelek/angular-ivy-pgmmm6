@@ -1,13 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import {
   combineLatest,
-  debounce,
   filter,
   forkJoin,
-  interval,
-  last,
   map,
-  merge,
   Observable,
   Subject,
   Subscription,
@@ -23,7 +19,6 @@ import { MockDataService } from './mock-data.service';
 export class AppComponent implements OnInit, OnDestroy {
   searchTermByCharacters = new Subject<string>();
   charactersResults$: Observable<any>;
-  planetsResults$: Observable<any>;
   planetAndCharactersResults$: Observable<any>;
   isLoading: boolean = false;
 
@@ -34,11 +29,11 @@ export class AppComponent implements OnInit, OnDestroy {
     this.initCharacterEvents();
   }
 
-  changeCharactersInput(element: any): void {
+  changeCharactersInput(element): void {
     // 1.1. Add functionality to changeCharactersInput method. Changes searchTermByCharacters Subject value on input change.
     const inputValue: string = element.target.value;
     // YOUR CODE STARTS HERE
-    this.searchTermByCharacters.next(inputValue);
+
     // YOUR CODE ENDS HERE
   }
 
@@ -49,28 +44,18 @@ export class AppComponent implements OnInit, OnDestroy {
 
     // 3. Add debounce to prevent API calls until user stop typing.
 
-    this.charactersResults$ = this.searchTermByCharacters.pipe(
+    this.charactersResults$ = this.searchTermByCharacters
+      .pipe
       // YOUR CODE STARTS HERE
-      filter((s: string) => s.length >= 3),
-      debounce(() => interval(300)),
-      map((query) => console.log(this.mockDataService.getCharacters(query)))
-    );
-    // YOUR CODE ENDS HERE
+
+      // YOUR CODE ENDS HERE
+      ();
   }
 
   loadCharactersAndPlanet(): void {
     // 4. On clicking the button 'Load Characters And Planets', it is necessary to process two requests and combine the results of both requests into one result array. As a result, a list with the names of the characters and the names of the planets is displayed on the screen.
     // Your code should looks like this: this.planetAndCharactersResults$ = /* Your code */
     // YOUR CODE STARTS HERE
-
-    this.planetAndCharactersResults$ = combineLatest(
-      this.charactersResults$,
-      this.searchTermByCharacters.pipe(
-        map((query) => this.mockDataService.getPlanets(query))
-      )
-    );
-    console.log(this.planetAndCharactersResults$);
-
     // YOUR CODE ENDS HERE
   }
 
