@@ -53,7 +53,7 @@ export class AppComponent implements OnInit, OnDestroy {
       // YOUR CODE STARTS HERE
       filter((s: string) => s.length >= 3),
       debounce(() => interval(300)),
-      map((query) => console.log(this.mockDataService.getCharacters(query)))
+      switchMap((query) => this.mockDataService.getCharacters(query))
     );
     // YOUR CODE ENDS HERE
   }
@@ -63,13 +63,16 @@ export class AppComponent implements OnInit, OnDestroy {
     // Your code should looks like this: this.planetAndCharactersResults$ = /* Your code */
     // YOUR CODE STARTS HERE
 
-    this.planetAndCharactersResults$ = combineLatest(
-      this.charactersResults$,
-      this.searchTermByCharacters.pipe(
-        map((query) => this.mockDataService.getPlanets(query))
-      )
-    );
-    console.log(this.planetAndCharactersResults$);
+    const planets$ = this.charactersResults$.pipe(
+      map((char) => this.mockDataService.getPlanets(char.results.homeworld.match(/\d*/))));
+    
+    this.planetAndCharactersResults$ = planets$;
+      
+
+    // this.planetAndCharactersResults$ = combineLatest([this.charactersResults$, planets$]).pipe(switchMap((item) => {
+    //      return [item]
+    //    }));
+    // console.log(this.planetAndCharactersResults$);
 
     // YOUR CODE ENDS HERE
   }
