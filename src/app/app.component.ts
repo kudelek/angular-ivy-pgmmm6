@@ -3,14 +3,10 @@ import {
   combineLatest,
   debounce,
   filter,
-  forkJoin,
   interval,
-  last,
   map,
-  merge,
   Observable,
   Subject,
-  Subscription,
   switchMap,
 } from 'rxjs';
 import { MockDataService } from './mock-data.service';
@@ -53,7 +49,7 @@ export class AppComponent implements OnInit, OnDestroy {
       // YOUR CODE STARTS HERE
       filter((s: string) => s.length >= 3),
       debounce(() => interval(300)),
-      switchMap((query) => this.mockDataService.getCharacters(query))
+      switchMap((query: string) => this.mockDataService.getCharacters(query))
     );
     // YOUR CODE ENDS HERE
   }
@@ -63,16 +59,10 @@ export class AppComponent implements OnInit, OnDestroy {
     // Your code should looks like this: this.planetAndCharactersResults$ = /* Your code */
     // YOUR CODE STARTS HERE
 
-    const planets$ = this.charactersResults$.pipe(
-      map((char) => this.mockDataService.getPlanets(char.results.homeworld.match(/\d*/))));
-    
-    this.planetAndCharactersResults$ = planets$;
-      
-
-    // this.planetAndCharactersResults$ = combineLatest([this.charactersResults$, planets$]).pipe(switchMap((item) => {
-    //      return [item]
-    //    }));
-    // console.log(this.planetAndCharactersResults$);
+    this.planetAndCharactersResults$ = combineLatest(
+      this.mockDataService.getCharacters(),
+      this.mockDataService.getPlanets()
+    ).pipe(map(([x, y]) => x.concat(y)));
 
     // YOUR CODE ENDS HERE
   }
@@ -84,12 +74,21 @@ export class AppComponent implements OnInit, OnDestroy {
     - Subscribe to changes
     - Check the received value using the areAllValuesTrue function and pass them to the isLoading variable. */
     // YOUR CODE STARTS HERE
+
+    combineLatest(
+      this.mockDataService.getCharactersLoader(),
+      this.mockDataService.getPlanetLoader()
+    )
+      .pipe(map(([x, y]) => (this.isLoading = this.areAllValuesTrue([x, y]))))
+      .subscribe();
+
     // YOUR CODE ENDS HERE
   }
 
   ngOnDestroy(): void {
     // 5.2 Unsubscribe from all subscriptions
     // YOUR CODE STARTS HERE
+    this.searchTermByCharacters.complete();
     // YOUR CODE ENDS HERE
   }
 
