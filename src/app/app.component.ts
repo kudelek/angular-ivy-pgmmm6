@@ -5,9 +5,11 @@ import {
   filter,
   interval,
   map,
+  merge,
   Observable,
   Subject,
   switchMap,
+  tap,
 } from 'rxjs';
 import { MockDataService } from './mock-data.service';
 
@@ -59,10 +61,10 @@ export class AppComponent implements OnInit, OnDestroy {
     // Your code should looks like this: this.planetAndCharactersResults$ = /* Your code */
     // YOUR CODE STARTS HERE
 
-    this.planetAndCharactersResults$ = combineLatest(
+    this.planetAndCharactersResults$ = combineLatest([
       this.mockDataService.getCharacters(),
       this.mockDataService.getPlanets()
-    ).pipe(map(([x, y]) => x.concat(y)));
+    ]).pipe(map(([characters, planets]) => characters.concat(planets)));
 
     // YOUR CODE ENDS HERE
   }
@@ -79,7 +81,15 @@ export class AppComponent implements OnInit, OnDestroy {
       this.mockDataService.getCharactersLoader(),
       this.mockDataService.getPlanetLoader()
     )
-      .pipe(map(([x, y]) => (this.isLoading = this.areAllValuesTrue([x, y]))))
+      .pipe(
+        tap(
+          ([isLoadingCharacters, isLoadingPlanets]) =>
+            (this.isLoading = this.areAllValuesTrue([
+              isLoadingCharacters,
+              isLoadingPlanets,
+            ]))
+        )
+      )
       .subscribe();
 
     // YOUR CODE ENDS HERE
